@@ -1,10 +1,25 @@
 # Сервер для Яндекс Дом
 
-https://vak1n.github.io/smarthouse/public/
+https://smarthouse-server.herokuapp.com/
 
-### Разработка 
+#### Запуск
 
 ```sh
 npm install
 npm start
 ```
+
+#### Разработка 
+
+```sh
+npm install
+npm run dev
+```
+
+### Четвертое задание «Node js»
+
+#### Сервер
+
+#### Роуты
+
+#### Дополнительно

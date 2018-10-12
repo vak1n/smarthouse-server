@@ -11,10 +11,16 @@ router.post('/', (req, res, next) => {
     return res.status(400).end('Incorrect type')
   }
 
-  // проверяем передаваемый post параметр page
-  const page = parseFloat(req.body.page);
-  if (typeof page !== "number") {
-    return res.status(400 ).end('Incorrect page')
+  // проверяем передаваемый параметр begin
+  const begin = parseInt(req.body.begin);
+  if (req.body.begin !== undefined && (isNaN(begin) || begin < 0)) {
+    return res.status(400).end('Incorrect begin')
+  }
+
+  // проверяем передаваемый параметр limit
+  const limit = parseInt(req.body.limit);
+  if (req.body.limit !== undefined && (isNaN(limit) || limit < 0)) {
+    return res.status(400).end('Incorrect limit')
   }
 
   // читаем файл
@@ -41,12 +47,11 @@ router.post('/', (req, res, next) => {
         events = events = json.events;
     }
 
-    // отдаем по страницам если нужно
-    if (page > 0) {
-      const count = 3;
-      const start = page > 1 ? (page - 1) * count : 0;
-      const end = start + 3;
-      events = events.slice(start, end)
+    // отдаем срез если нужно
+    if (begin > 0 || limit > 0) {
+      const start = begin > 1 ? begin - 1 : 0;
+      const end = limit > 0 ? start + limit : events.length;
+      events = events.slice(start, end);
     }
 
     // позволяем cross-origin resource sharing (CORS) для обращения с сервису с других доменов
