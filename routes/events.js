@@ -3,18 +3,17 @@ const fs = require('fs');
 const router = express.Router();
 const createError = require('http-errors');
 
-router.get('/', (req, res, next) => {
+router.post('/', (req, res, next) => {
+  const type = req.body.type;
+  if (type !== undefined && ['info', 'critical'].indexOf(type) === -1) {
+    return res.status(400).end('Incorrect type')
+  }
+
   fs.readFile(__dirname + '/../db/events.json', 'utf-8', function (err, content) {
     if (err) {
       console.error(err);
     }
-    const type = req.query.type;
-    if (type !== undefined && ['info', 'critical'].indexOf(type) === -1) {
-      return res.status(400).end('Incorrect type')
-    }
-
     const json = JSON.parse(content);
-
     switch (type) {
       case 'info':
         return res.json(json.events.filter((el) => {
