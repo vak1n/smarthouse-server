@@ -49,6 +49,9 @@ router.post('/', (req, res, next) => {
       events = events.slice(start, end)
     }
 
+    // позволяем cross-origin resource sharing (CORS) для обращения с сервису с других доменов
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     return res.json({"events": events});
   });
 
