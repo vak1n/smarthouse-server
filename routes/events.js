@@ -38,6 +38,7 @@ router.post('/', (req, res, next) => {
   fs.readFile(__dirname + '/../db/events.json', 'utf-8', function (err, content) {
     if (err) {
       console.error(err);
+      return next(createError(500))
     }
 
     // фильтурем по тиму если нужно иначе отдаем все
