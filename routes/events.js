@@ -4,49 +4,59 @@ const router = express.Router();
 const createError = require('http-errors');
 
 router.post('/', (req, res, next) => {
+  const typesUsed = ['info', 'critical'];
 
-  // проверяем передаваемый post параметр type
-  const type = req.body.type;
-  if (type !== undefined && ['info', 'critical'].indexOf(type) === -1) {
-    return res.status(400).end('Incorrect type')
+  // проверяем передаваемый параметр type
+  const types = req.body.type.split(':');
+  if (req.body.type !== undefined) {
+    if (types.length < 2) {
+      if (typesUsed.indexOf(types[0]) === -1) {
+        return res.status(400).end('Incorrect type');
+      }
+    } else {
+      for (let i = 0; i < types.length; i++) {
+        if (typesUsed.indexOf(types[i]) === -1) {
+          return res.status(400).end('Incorrect type');
+        }
+      }
+    }
   }
 
-  // проверяем передаваемый post параметр page
-  const page = parseFloat(req.body.page);
-  if (typeof page !== "number") {
-    return res.status(400 ).end('Incorrect page')
+  // проверяем передаваемый параметр begin
+  const begin = parseInt(req.body.begin);
+  if (req.body.begin !== undefined && (isNaN(begin) || begin < 0)) {
+    return res.status(400).end('Incorrect begin')
+  }
+
+  // проверяем передаваемый параметр limit
+  const limit = parseInt(req.body.limit);
+  if (req.body.limit !== undefined && (isNaN(limit) || limit < 0)) {
+    return res.status(400).end('Incorrect limit')
   }
 
   // читаем файл
   fs.readFile(__dirname + '/../db/events.json', 'utf-8', function (err, content) {
     if (err) {
       console.error(err);
+      return next(createError(500))
     }
 
     // фильтурем по тиму если нужно иначе отдаем все
     const json = JSON.parse(content);
     let events = [];
-    switch (type) {
-      case 'info':
-        events = json.events.filter((el) => {
-          return (el['type'] === 'info');
-        });
-        break;
-      case 'critical':
-        events = json.events.filter((el) => {
-          return (el['type'] === 'critical');
-        });
-        break;
-      default:
-        events = events = json.events;
+    if (types.length > 0) {
+      events = json.events.filter((event) => {
+        return types.indexOf(event['type']) > -1;
+      });
+    } else {
+      events = json.events;
     }
 
-    // отдаем по страницам если нужно
-    if (page > 0) {
-      const count = 3;
-      const start = page > 1 ? (page - 1) * count : 0;
-      const end = start + 3;
-      events = events.slice(start, end)
+    // отдаем срез если нужно
+    if (begin > 0 || limit > 0) {
+      const start = begin > 1 ? begin - 1 : 0;
+      const end = limit > 0 ? start + limit : events.length;
+      events = events.slice(start, end);
     }
 
     // позволяем cross-origin resource sharing (CORS) для обращения с сервису с других доменов

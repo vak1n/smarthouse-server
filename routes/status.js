@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const {performance} = require('perf_hooks');
-const moment = require('moment');
 
 router.get('/', (req, res, next) => {
-  const duration = Math.round(performance.nodeTiming.duration);
-  return res.send(moment().hours(24).minutes(0).seconds(0).milliseconds(duration).format('HH:mm:ss'));
+  const uptime = Math.round(process.uptime());
+  const date = new Date();
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(uptime);
+  return res.send(date.toLocaleTimeString({hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit"}));
 });
 
 module.exports = router;
