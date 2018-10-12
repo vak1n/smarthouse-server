@@ -4,11 +4,22 @@ const router = express.Router();
 const createError = require('http-errors');
 
 router.post('/', (req, res, next) => {
+  const typesUsed = ['info', 'critical'];
 
-  // проверяем передаваемый post параметр type
-  const type = req.body.type;
-  if (type !== undefined && ['info', 'critical'].indexOf(type) === -1) {
-    return res.status(400).end('Incorrect type')
+  // проверяем передаваемый параметр type
+  const types = req.body.type.split(':');
+  if (req.body.type !== undefined) {
+    if (types.length < 2) {
+      if (typesUsed.indexOf(types[0]) === -1) {
+        return res.status(400).end('Incorrect type');
+      }
+    } else {
+      for (let i = 0; i < types.length; i++) {
+        if (typesUsed.indexOf(types[i]) === -1) {
+          return res.status(400).end('Incorrect type');
+        }
+      }
+    }
   }
 
   // проверяем передаваемый параметр begin
@@ -32,19 +43,12 @@ router.post('/', (req, res, next) => {
     // фильтурем по тиму если нужно иначе отдаем все
     const json = JSON.parse(content);
     let events = [];
-    switch (type) {
-      case 'info':
-        events = json.events.filter((el) => {
-          return (el['type'] === 'info');
-        });
-        break;
-      case 'critical':
-        events = json.events.filter((el) => {
-          return (el['type'] === 'critical');
-        });
-        break;
-      default:
-        events = events = json.events;
+    if (types.length > 0) {
+      events = json.events.filter((event) => {
+        return types.indexOf(event['type']) > -1;
+      });
+    } else {
+      events = json.events;
     }
 
     // отдаем срез если нужно
