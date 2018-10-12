@@ -10,10 +10,12 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use('/status', statusRouter);
 app.use('/api/events', eventsRouter);
 
+// по умолчанию ставим 404 статус
 app.use(function (req, res, next) {
   next(createError(404));
 });
 
+// обработка ошибок
 app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
