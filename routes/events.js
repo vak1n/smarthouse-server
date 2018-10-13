@@ -7,9 +7,10 @@ router.post('/', (req, res, next) => {
   const typesUsed = ['info', 'critical'];
 
   // проверяем передаваемый параметр type
-  const types = req.body.type.split(':');
+  let types = [];
   if (req.body.type !== undefined) {
-    if (types.length < 2) {
+    types = req.body.type.split(':');
+    if (types.length === 1) {
       if (typesUsed.indexOf(types[0]) === -1) {
         return res.status(400).end('Incorrect type');
       }
