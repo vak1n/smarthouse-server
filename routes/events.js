@@ -24,9 +24,9 @@ router.post('/', (req, res, next) => {
   }
 
   // проверяем передаваемый параметр begin
-  const begin = parseInt(req.body.begin);
-  if (req.body.begin !== undefined && (isNaN(begin) || begin < 0)) {
-    return res.status(400).end('Incorrect begin')
+  const offset = parseInt(req.body.offset);
+  if (req.body.offset !== undefined && (isNaN(offset) || offset < 0)) {
+    return res.status(400).end('Incorrect offset')
   }
 
   // проверяем передаваемый параметр limit
@@ -36,14 +36,14 @@ router.post('/', (req, res, next) => {
   }
 
   // читаем файл
-  fs.readFile(__dirname + '/../db/events.json', 'utf-8', function (err, content) {
+  fs.readFile(__dirname + '/../db/events.json', 'utf-8', function (err, data) {
     if (err) {
       console.error(err);
       return next(createError(500))
     }
 
     // фильтурем по тиму если нужно иначе отдаем все
-    const json = JSON.parse(content);
+    const json = JSON.parse(data);
     let events = [];
     if (types.length > 0) {
       events = json.events.filter((event) => {
@@ -54,8 +54,8 @@ router.post('/', (req, res, next) => {
     }
 
     // отдаем срез если нужно
-    if (begin > 0 || limit > 0) {
-      const start = begin > 1 ? begin - 1 : 0;
+    if (offset > 0 || limit > 0) {
+      const start = offset > 1 ? offset - 1 : 0;
       const end = limit > 0 ? start + limit : events.length;
       events = events.slice(start, end);
     }
