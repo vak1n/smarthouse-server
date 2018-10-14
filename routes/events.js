@@ -23,7 +23,7 @@ router.post('/', (req, res, next) => {
     }
   }
 
-  // проверяем передаваемый параметр begin
+  // проверяем передаваемый параметр offset
   const offset = parseInt(req.body.offset);
   if (req.body.offset !== undefined && (isNaN(offset) || offset < 0)) {
     return res.status(400).end('Incorrect offset')
@@ -60,7 +60,7 @@ router.post('/', (req, res, next) => {
       events = events.slice(start, end);
     }
 
-    // позволяем cross-origin resource sharing (CORS) для обращения с сервису с других доменов
+    // позволяем cross-origin resource sharing (CORS) для обращения к сервису с других доменов
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     return res.json({"events": events});
