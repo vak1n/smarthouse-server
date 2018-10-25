@@ -1,13 +1,15 @@
-const express = require('express');
-const fs = require('fs');
+import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import createHttpError from 'http-errors';
+
 const router = express.Router();
-const createError = require('http-errors');
 
 router.post('/', (req, res, next) => {
   const typesUsed = ['info', 'critical'];
 
   // проверяем передаваемый параметр type
-  let types = [];
+  let types: Array<string> = [];
   if (req.body.type !== undefined) {
     types = req.body.type.split(':');
     if (types.length === 1) {
@@ -36,18 +38,27 @@ router.post('/', (req, res, next) => {
   }
 
   // читаем файл
-  fs.readFile(__dirname + '/../db/events.json', 'utf-8', function (err, data) {
+  fs.readFile(path.resolve(__dirname) + '/../../db/events.json', 'utf-8', function (err, data) {
     if (err) {
       console.error(err);
-      return next(createError(500))
+      return next(createHttpError(500))
     }
 
     // фильтурем по тиму если нужно иначе отдаем все
     const json = JSON.parse(data);
     let events = [];
     if (types.length > 0) {
-      events = json.events.filter((event) => {
-        return types.indexOf(event['type']) > -1;
+      events = json.events.filter((event: {
+        type: string,
+        title: string,
+        source: string,
+        time: string,
+        description: string,
+        icon: string,
+        data: object,
+        size: string
+      }) => {
+        return types.includes(event.type);
       });
     } else {
       events = json.events;
@@ -69,4 +80,4 @@ router.post('/', (req, res, next) => {
 
 });
 
-module.exports = router;
+export default router;

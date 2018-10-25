@@ -1,4 +1,5 @@
-const express = require('express');
+import express from 'express';
+
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
@@ -7,7 +8,10 @@ router.get('/', (req, res, next) => {
   date.setHours(0);
   date.setMinutes(0);
   date.setSeconds(uptime);
-  return res.send(date.toLocaleTimeString({hour12: true, hour: "2-digit", minute: "2-digit", second: "2-digit"}));
+  return res.send(date.toLocaleTimeString(
+    undefined,
+    {hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit"}
+  ));
 });
 
-module.exports = router;
+export default router;
