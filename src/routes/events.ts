@@ -1,7 +1,7 @@
 import express from 'express';
 import fs from 'fs';
-import path from 'path';
 import createHttpError from 'http-errors';
+import path from 'path';
 
 const router = express.Router();
 
@@ -9,39 +9,33 @@ router.post('/', (req, res, next) => {
   const typesUsed = ['info', 'critical'];
 
   // проверяем передаваемый параметр type
-  let types: Array<string> = [];
+  let types: string[] = [];
   if (req.body.type !== undefined) {
     types = req.body.type.split(':');
-    if (types.length === 1) {
-      if (typesUsed.indexOf(types[0]) === -1) {
+    for (const type of types) {
+      if (!typesUsed.includes(type)) {
         return res.status(400).end('Incorrect type');
-      }
-    } else {
-      for (let i = 0; i < types.length; i++) {
-        if (typesUsed.indexOf(types[i]) === -1) {
-          return res.status(400).end('Incorrect type');
-        }
       }
     }
   }
 
   // проверяем передаваемый параметр offset
-  const offset = parseInt(req.body.offset);
+  const offset = parseInt(req.body.offset, 10);
   if (req.body.offset !== undefined && (isNaN(offset) || offset < 0)) {
-    return res.status(400).end('Incorrect offset')
+    return res.status(400).end('Incorrect offset');
   }
 
   // проверяем передаваемый параметр limit
-  const limit = parseInt(req.body.limit);
+  const limit = parseInt(req.body.limit, 10);
   if (req.body.limit !== undefined && (isNaN(limit) || limit < 0)) {
-    return res.status(400).end('Incorrect limit')
+    return res.status(400).end('Incorrect limit');
   }
 
   // читаем файл
-  fs.readFile(path.resolve(__dirname) + '/../../db/events.json', 'utf-8', function (err, data) {
+  fs.readFile(path.resolve(__dirname) + '/../../db/events.json', 'utf-8', (err, data) => {
     if (err) {
-      console.error(err);
-      return next(createHttpError(500))
+      console.log(err);
+      return next(createHttpError(500));
     }
 
     // фильтурем по тиму если нужно иначе отдаем все
@@ -56,7 +50,7 @@ router.post('/', (req, res, next) => {
         description: string,
         icon: string,
         data: object,
-        size: string
+        size: string,
       }) => {
         return types.includes(event.type);
       });
@@ -72,11 +66,10 @@ router.post('/', (req, res, next) => {
     }
 
     // позволяем cross-origin resource sharing (CORS) для обращения к сервису с других доменов
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    return res.json({"events": events});
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+    return res.json({events});
   });
-
 
 });
 

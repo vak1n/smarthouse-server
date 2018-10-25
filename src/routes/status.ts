@@ -10,7 +10,7 @@ router.get('/', (req, res, next) => {
   date.setSeconds(uptime);
   return res.send(date.toLocaleTimeString(
     undefined,
-    {hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit"}
+    {hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit'},
   ));
 });
 
