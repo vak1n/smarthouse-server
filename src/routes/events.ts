@@ -34,7 +34,7 @@ router.post('/', (req, res, next) => {
   // читаем файл
   fs.readFile(path.resolve(__dirname) + '/../../db/events.json', 'utf-8', (err, data) => {
     if (err) {
-      console.log(err);
+      process.stdout.write(err.message);
       return next(createHttpError(500));
     }
 
