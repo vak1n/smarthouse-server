@@ -17,7 +17,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 });
 
 // обработка ошибок
-app.use((err: HttpError, req: express.Request, res: express.Response) => {
+app.use((err: HttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
   process.stdout.write(err.message);
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
