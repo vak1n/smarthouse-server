@@ -20,13 +20,13 @@ router.post('/', (req, res, next) => {
   }
 
   // проверяем передаваемый параметр offset
-  const offset = parseInt(req.body.offset, 10);
+  const offset: number = parseInt(req.body.offset, 10);
   if (req.body.offset !== undefined && (isNaN(offset) || offset < 0)) {
     return res.status(400).end('Incorrect offset');
   }
 
   // проверяем передаваемый параметр limit
-  const limit = parseInt(req.body.limit, 10);
+  const limit: number = parseInt(req.body.limit, 10);
   if (req.body.limit !== undefined && (isNaN(limit) || limit < 0)) {
     return res.status(400).end('Incorrect limit');
   }
