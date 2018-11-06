@@ -1,23 +1,24 @@
-const express = require('express');
-const createError = require('http-errors');
-const bodyParser = require('body-parser');
+import bodyParser from 'body-parser';
+import express from 'express';
+import createHttpError, {HttpError} from 'http-errors';
+
 const app = express();
 
-const statusRouter = require('./routes/status');
-const eventsRouter = require('./routes/events');
+import eventsRouter from './routes/events';
+import statusRouter from './routes/status';
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/status', statusRouter);
 app.use('/api/events', eventsRouter);
 
 // по умолчанию ставим 404 статус
-app.use(function (req, res, next) {
-  next(createError(404));
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    return next(createHttpError(404));
 });
 
 // обработка ошибок
-app.use(function (err, req, res, next) {
-  console.log(err);
+app.use((err: HttpError, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  process.stdout.write(err.message);
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
@@ -29,5 +30,5 @@ app.use(function (err, req, res, next) {
 
 const port = process.env.PORT || '8000';
 app.listen(port, () => {
-  console.log(`App listening on port ${port}!`);
+  process.stdout.write(`App listening on port ${port}!`);
 });

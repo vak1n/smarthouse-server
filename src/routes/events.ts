@@ -1,53 +1,58 @@
-const express = require('express');
-const fs = require('fs');
+import express from 'express';
+import fs from 'fs';
+import createHttpError from 'http-errors';
+import path from 'path';
+
 const router = express.Router();
-const createError = require('http-errors');
 
 router.post('/', (req, res, next) => {
   const typesUsed = ['info', 'critical'];
 
   // проверяем передаваемый параметр type
-  let types = [];
+  let types: string[] = [];
   if (req.body.type !== undefined) {
     types = req.body.type.split(':');
-    if (types.length === 1) {
-      if (typesUsed.indexOf(types[0]) === -1) {
+    for (const type of types) {
+      if (!typesUsed.includes(type)) {
         return res.status(400).end('Incorrect type');
-      }
-    } else {
-      for (let i = 0; i < types.length; i++) {
-        if (typesUsed.indexOf(types[i]) === -1) {
-          return res.status(400).end('Incorrect type');
-        }
       }
     }
   }
 
   // проверяем передаваемый параметр offset
-  const offset = parseInt(req.body.offset);
+  const offset: number = parseInt(req.body.offset, 10);
   if (req.body.offset !== undefined && (isNaN(offset) || offset < 0)) {
-    return res.status(400).end('Incorrect offset')
+    return res.status(400).end('Incorrect offset');
   }
 
   // проверяем передаваемый параметр limit
-  const limit = parseInt(req.body.limit);
+  const limit: number = parseInt(req.body.limit, 10);
   if (req.body.limit !== undefined && (isNaN(limit) || limit < 0)) {
-    return res.status(400).end('Incorrect limit')
+    return res.status(400).end('Incorrect limit');
   }
 
   // читаем файл
-  fs.readFile(__dirname + '/../db/events.json', 'utf-8', function (err, data) {
+  fs.readFile(path.resolve(__dirname) + '/../../db/events.json', 'utf-8', (err, data) => {
     if (err) {
-      console.error(err);
-      return next(createError(500))
+      process.stdout.write(err.message);
+      return next(createHttpError(500));
     }
 
     // фильтурем по тиму если нужно иначе отдаем все
     const json = JSON.parse(data);
     let events = [];
     if (types.length > 0) {
-      events = json.events.filter((event) => {
-        return types.indexOf(event['type']) > -1;
+      events = json.events.filter((event: {
+        type: string,
+        title: string,
+        source: string,
+        time: string,
+        description: string,
+        icon: string,
+        data: object,
+        size: string,
+      }) => {
+        return types.includes(event.type);
       });
     } else {
       events = json.events;
@@ -61,12 +66,11 @@ router.post('/', (req, res, next) => {
     }
 
     // позволяем cross-origin resource sharing (CORS) для обращения к сервису с других доменов
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    return res.json({"events": events});
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+    return res.json({events});
   });
-
 
 });
 
-module.exports = router;
+export default router;
