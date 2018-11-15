@@ -1,7 +1,7 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
-import createHttpError, {HttpError} from 'http-errors';
+import createHttpError, { HttpError } from 'http-errors';
 
 const app = express();
 
@@ -10,14 +10,14 @@ import statusRouter from './routes/status';
 import videosRouter from './routes/videos';
 
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/status', statusRouter);
 app.use('/api/events', eventsRouter);
 app.use('/api/videos', videosRouter);
 
 // по умолчанию ставим 404 статус
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-    return next(createHttpError(404));
+  return next(createHttpError(404));
 });
 
 // обработка ошибок

@@ -42,18 +42,20 @@ router.post('/', (req, res, next) => {
     const json = JSON.parse(data);
     let events = [];
     if (types.length > 0) {
-      events = json.events.filter((event: {
-        type: string,
-        title: string,
-        source: string,
-        time: string,
-        description: string,
-        icon: string,
-        data: object,
-        size: string,
-      }) => {
-        return types.includes(event.type);
-      });
+      events = json.events.filter(
+        (event: {
+          type: string;
+          title: string;
+          source: string;
+          time: string;
+          description: string;
+          icon: string;
+          data: object;
+          size: string;
+        }) => {
+          return types.includes(event.type);
+        },
+      );
     } else {
       events = json.events;
     }
@@ -65,9 +67,8 @@ router.post('/', (req, res, next) => {
       events = events.slice(start, end);
     }
 
-    return res.json({events});
+    return res.json({ events });
   });
-
 });
 
 export default router;

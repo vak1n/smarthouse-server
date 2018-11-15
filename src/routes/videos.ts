@@ -6,7 +6,6 @@ import path from 'path';
 const router = express.Router();
 
 router.post('/', (req, res, next) => {
-
   // читаем файл
   fs.readFile(path.resolve(__dirname) + '/../../db/videos.json', 'utf-8', (err, data) => {
     if (err) {
@@ -18,7 +17,6 @@ router.post('/', (req, res, next) => {
     const json = JSON.parse(data);
     return res.json(json);
   });
-
 });
 
 export default router;
