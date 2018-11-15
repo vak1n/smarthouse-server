@@ -6,10 +6,12 @@ const app = express();
 
 import eventsRouter from './routes/events';
 import statusRouter from './routes/status';
+import videosRouter from './routes/videos';
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/status', statusRouter);
 app.use('/api/events', eventsRouter);
+app.use('/api/videos', videosRouter);
 
 // по умолчанию ставим 404 статус
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
