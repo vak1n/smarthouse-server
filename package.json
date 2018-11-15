@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node build/app.js",
     "dev": "nodemon --exec 'ts-node' src/app.ts",
-    "lint": "tslint src/**/*.ts --fix",
+    "lint": "tslint --fix src/*.ts src/**/*.ts src/**/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -29,7 +29,9 @@
   },
   "devDependencies": {
     "nodemon": "^1.18.4",
+    "prettier": "^1.15.2",
     "ts-node": "^7.0.1",
-    "tslint": "^5.11.0"
+    "tslint": "^5.11.0",
+    "tslint-plugin-prettier": "^2.0.1"
   }
 }
