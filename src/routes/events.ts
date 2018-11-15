@@ -1,11 +1,13 @@
+import bodyParser from 'body-parser';
 import express from 'express';
 import fs from 'fs';
 import createHttpError from 'http-errors';
 import path from 'path';
 
 const router = express.Router();
+const urlParser = bodyParser.urlencoded({ extended: true });
 
-router.post('/', (req, res, next) => {
+router.post('/', urlParser, (req, res, next) => {
   const typesUsed = ['info', 'critical'];
 
   // проверяем передаваемый параметр type
@@ -34,7 +36,7 @@ router.post('/', (req, res, next) => {
   // читаем файл
   fs.readFile(path.resolve(__dirname) + '/../../db/events.json', 'utf-8', (err, data) => {
     if (err) {
-      process.stdout.write(err.message);
+      process.stdout.write('\n' + err.message);
       return next(createHttpError(500));
     }
 
