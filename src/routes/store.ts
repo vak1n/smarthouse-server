@@ -46,7 +46,7 @@ router.post('/set', jsonParser, (req, res, next) => {
   );
 });
 
-router.post('/set/:id', jsonParser, (req, res, next) => {
+router.post('/update/:id', jsonParser, (req, res, next) => {
   const userId = req.params.id;
   const store = req.body;
   if (!store) {
