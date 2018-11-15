@@ -58,16 +58,13 @@ router.post('/', (req, res, next) => {
       events = json.events;
     }
 
-    // отдаем срез если нужно
+    // делаем срез если нужно
     if (offset > 0 || limit > 0) {
       const start = offset > 1 ? offset - 1 : 0;
       const end = limit > 0 ? start + limit : events.length;
       events = events.slice(start, end);
     }
 
-    // позволяем cross-origin resource sharing (CORS) для обращения к сервису с других доменов
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With');
     return res.json({events});
   });
 
