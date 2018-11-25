@@ -15,7 +15,7 @@ interface IStore extends mongoose.Document {
 }
 
 mongoose.Promise = global.Promise;
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI || 'localhost:27017/store';
 if (!MONGODB_URI) {
   throw new Error('MONGODB_URI is not found');
 }
