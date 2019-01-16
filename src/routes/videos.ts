@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post('/', (req, res, next) => {
   // читаем файл
-  fs.readFile(path.resolve(__dirname) + '/../../db/videos.json', 'utf-8', (err, data) => {
+  fs.readFile(path.resolve(__dirname) + '/../../fixtures/videos.json', 'utf-8', (err, data) => {
     if (err) {
       process.stdout.write('\n' + err.message);
       return next(createHttpError(500));
