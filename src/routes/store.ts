@@ -25,7 +25,7 @@ const jsonParser = bodyParser.json();
 
 const Store = mongoose.model<IStore>('Store', StoreSchema);
 
-router.post('/set', jsonParser, (req, res, next) => {
+router.post('/', jsonParser, (req, res, next) => {
   const store = req.body;
   if (!store) {
     return res.status(400).end('Incorrect store');
@@ -46,7 +46,7 @@ router.post('/set', jsonParser, (req, res, next) => {
   );
 });
 
-router.post('/update/:id', jsonParser, (req, res, next) => {
+router.put('/:id', jsonParser, (req, res, next) => {
   const userId = req.params.id;
   const store = req.body;
   if (!store) {
@@ -68,7 +68,7 @@ router.post('/update/:id', jsonParser, (req, res, next) => {
   );
 });
 
-router.post('/get/:id', (req, res, next) => {
+router.get('/:id', (req, res, next) => {
   const userId = req.params.id;
   if (!userId) {
     return res.status(400).end('Incorrect id');
