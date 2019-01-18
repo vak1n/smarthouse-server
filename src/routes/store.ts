@@ -14,6 +14,11 @@ interface IStore extends mongoose.Document {
   videos?: IVideoData[];
 }
 
+interface IResult {
+  data: Record<string, string | IStore>;
+  error: Record<string, string>;
+}
+
 const router = express.Router();
 const jsonParser = bodyParser.json();
 
@@ -26,10 +31,15 @@ router.post('/', jsonParser, (req, res, next) => {
   }
 
   Store.create(store, (err: MongoError, doc: MongooseDocument) => {
+    const result: IResult = {
+      data: {},
+      error: {},
+    };
     if (err) {
-      return res.send(err.message);
+      result.error.message = err.message;
     }
-    return res.send(doc._id);
+    result.data._id = doc._id;
+    return res.json(result);
   });
 });
 
@@ -41,10 +51,14 @@ router.put('/:id', jsonParser, (req, res, next) => {
   }
 
   Store.findByIdAndUpdate(userId, store, (err, doc) => {
+    const result: IResult = {
+      data: {},
+      error: {},
+    };
     if (err) {
-      return res.send(err.message);
+      result.error.message = err.message;
     }
-    return res.send('success');
+    return res.json(result);
   });
 });
 
@@ -54,13 +68,19 @@ router.get('/:id', (req, res, next) => {
     return res.status(400).end('Incorrect id');
   }
   Store.findById(userId, (err, doc) => {
+    const result: IResult = {
+      data: {},
+      error: {},
+    };
     if (err) {
-      return res.send(err.message);
+      result.error.message = err.message;
     }
     if (doc) {
-      return res.json(doc.toJSON({}));
+      result.data = doc.toJSON({});
+      return res.json(result);
     }
-    return res.json('not found');
+    result.error.message = 'not found';
+    return res.json(result);
   });
 });
 
