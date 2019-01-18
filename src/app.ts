@@ -4,10 +4,26 @@ import createHttpError, { HttpError } from 'http-errors';
 
 const app = express();
 
+import { MongoError } from 'mongodb';
+import mongoose from 'mongoose';
 import eventsRouter from './routes/events';
 import statusRouter from './routes/status';
 import storeRouter from './routes/store';
 import videosRouter from './routes/videos';
+
+mongoose.Promise = global.Promise;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://smarthouse:smarthouse@localhost:27017/smarthouse';
+
+mongoose.connect(
+  MONGODB_URI,
+  { useNewUrlParser: true },
+  (err: MongoError) => {
+    if (err) {
+      process.stdout.write('\n' + err.message);
+      return;
+    }
+  },
+);
 
 app.use(cors());
 app.use('/status', statusRouter);

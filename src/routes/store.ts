@@ -14,12 +14,6 @@ interface IStore extends mongoose.Document {
   videos?: IVideoData[];
 }
 
-mongoose.Promise = global.Promise;
-const MONGODB_URI = process.env.MONGODB_URI || 'localhost:27017/store';
-if (!MONGODB_URI) {
-  throw new Error('MONGODB_URI is not found');
-}
-
 const router = express.Router();
 const jsonParser = bodyParser.json();
 
@@ -31,19 +25,12 @@ router.post('/', jsonParser, (req, res, next) => {
     return res.status(400).end('Incorrect store');
   }
 
-  mongoose.connect(
-    MONGODB_URI,
-    { useNewUrlParser: true },
-    () => {
-      Store.create(store, (err: MongoError, doc: MongooseDocument) => {
-        mongoose.disconnect();
-        if (err) {
-          return res.send(err.message);
-        }
-        return res.send(doc._id);
-      });
-    },
-  );
+  Store.create(store, (err: MongoError, doc: MongooseDocument) => {
+    if (err) {
+      return res.send(err.message);
+    }
+    return res.send(doc._id);
+  });
 });
 
 router.put('/:id', jsonParser, (req, res, next) => {
@@ -53,19 +40,12 @@ router.put('/:id', jsonParser, (req, res, next) => {
     return res.status(400).end('Incorrect store');
   }
 
-  mongoose.connect(
-    MONGODB_URI,
-    { useNewUrlParser: true },
-    () => {
-      Store.findByIdAndUpdate(userId, store, (err, doc) => {
-        mongoose.disconnect();
-        if (err) {
-          return res.send(err.message);
-        }
-        return res.send('success');
-      });
-    },
-  );
+  Store.findByIdAndUpdate(userId, store, (err, doc) => {
+    if (err) {
+      return res.send(err.message);
+    }
+    return res.send('success');
+  });
 });
 
 router.get('/:id', (req, res, next) => {
@@ -73,22 +53,15 @@ router.get('/:id', (req, res, next) => {
   if (!userId) {
     return res.status(400).end('Incorrect id');
   }
-  mongoose.connect(
-    MONGODB_URI,
-    { useNewUrlParser: true },
-    () => {
-      Store.findById(userId, (err, doc) => {
-        mongoose.disconnect();
-        if (err) {
-          return res.send(err.message);
-        }
-        if (doc) {
-          return res.json(doc.toJSON({}));
-        }
-        return res.json('not found');
-      });
-    },
-  );
+  Store.findById(userId, (err, doc) => {
+    if (err) {
+      return res.send(err.message);
+    }
+    if (doc) {
+      return res.json(doc.toJSON({}));
+    }
+    return res.json('not found');
+  });
 });
 
 export default router;
