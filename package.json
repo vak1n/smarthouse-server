@@ -8,6 +8,8 @@
     "dev": "run-p watch:*",
     "watch:tsc": "tsc --watch",
     "watch:nodemon": "nodemon --inspect --watch build build/app.js",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose stop",
     "lint": "tslint --fix src/*.ts src/**/*.ts src/**/**/*.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
